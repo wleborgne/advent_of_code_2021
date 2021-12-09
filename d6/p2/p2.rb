@@ -1,35 +1,33 @@
 #!/usr/bin/env ruby
 
 # Open file
-input_file = "../sample.txt"
+input_file = "../input.txt"
 puts("Reading file #{input_file}")
 file = File.open(input_file)
 
 # Read file
-data = file.read.split(",")
+data = file.read.split(",").map { |n| n.to_i }
+
 days = 256
-sim_results = []
+initial_state = Hash.new{0}
 
-(0..6).each do |initial|
-    sim_school = [initial]
-    (1..days).each do |d|
-        noobs = []
-        sim_school.each_with_index do |f, index|
-            if f > 0
-                sim_school[index] = f - 1
-            else
-                sim_school[index] = 6
-                noobs << 8
-            end
-        end
-        sim_school += noobs
-        puts("#{sim_school.length} after #{d} days")
-    end
-    sim_results[initial] = sim_school.length
+(0..8).each do |t|
+    initial_state[t] = data.count(t)
 end
+puts initial_state
 
-total = 0
-data.each do |x|
-    total += sim_results[x.to_i]
+(1..days).each do |d|
+    noobs = resets = initial_state[0]
+    initial_state[0] = initial_state[1]
+    initial_state[1] = initial_state[2]
+    initial_state[2] = initial_state[3]
+    initial_state[3] = initial_state[4]
+    initial_state[4] = initial_state[5]
+    initial_state[5] = initial_state[6]
+    initial_state[6] = initial_state[7] + resets
+    initial_state[7] = initial_state[8]
+    initial_state[8] = noobs
 end
+total = initial_state.values().sum()
+
 puts total
